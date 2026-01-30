@@ -23,8 +23,21 @@ do_build_linux(){
 test_game(){
     echo "test game function"
 }
-show_info(){
-    echo "show info function"
+
+collect_info() {
+    print_header "PROJECT CONFIGURATION"
+    detected=$(detect_project_config)
+    detected_name=$(echo "$detected" | cut -d'|' -f1)
+    detected_version=$(echo "$detected" | cut -d'|' -f2)
+
+    if [ -n "$detected_name" ]; then
+    print_success "Detected: $detecded_name"
+    read -r -p "Game name [$detected_name]: " input
+    GAME_NAME="${input:-$detected_name}"
+    else
+        read -r -p "Game name [my-game]: " input
+        GAME_NAME="${input:-my-game}"
+    fi
 }
 
 print_menu_cli(){
@@ -46,7 +59,7 @@ print_menu_cli(){
         case $choice in
             1) do_build_linux; pause_menu ;;
             2) test_game; pause_menu ;;
-            3) show_info; pause_menu ;;
+            3) collect_info; pause_menu ;;
             0|q|Q) echo ""; echo -e "${GREEN}Goodbye!"; exit 0 ;;
             *) print_error "Invalid option"; sleep 1 ;;
         esac

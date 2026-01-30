@@ -63,6 +63,27 @@ print_warning() {
 print_info() {
     echo -e "${LIGHT_BLUE}INFO: ${BLUE}$1${NC}"
 }
+
+detect_project_config(){
+    detected_name=""
+    detected_version=""
+
+    if [ -f "conf.lua" ]; then
+        detected_name=$(grep -oP 't\.window\.title\s*=\s*"\K[^"]+' conf.lua 2>/dev/null || true)
+        detected_version=$(grep -oP 't\.version\s*=\s*"\K[^"]+' conf.lua 2>/dev/null || true)
+
+        if [ -z "$detected_name" ]; then
+            detected_name=$(grep -oP "t\.window\.title\s*=\s*'\K[^']+" conf.lua 2>/dev/null || true)
+        fi
+        echo "${detected_name}|${detected_version}"
+    fi
+}
+
+
+
+
+
+
 export -f pause_menu
 export -f print_banner_installer
 export -f print_banner_cli
@@ -72,3 +93,5 @@ export -f print_success
 export -f print_error
 export -f print_warning
 export -f print_info
+
+export -f detect_project_config
