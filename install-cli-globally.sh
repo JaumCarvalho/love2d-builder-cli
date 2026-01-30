@@ -51,8 +51,12 @@ main(){
     fi
 
     if [ ! -d "$INSTALL_DIR" ]; then
-        print_info "Creating $INSTALL_DIR"
+        print_info "Creating $INSTALL_DIR..."
         mkdir -p "$INSTALL_DIR"
     fi
+
+    print_info "Creating library directory $LIB_DIR..."
+    rm -rf "$LIB_DIR"
+    mkdir -p "$LIB_DIR"
 }
 main "$@"
