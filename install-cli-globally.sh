@@ -2,47 +2,18 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/src/utils.sh"
+
 SCRIPT_NAME="love2d-builder"
 INSTALL_DIR="${HOME}/.local/bin"
 LIB_DIR="${HOME}/.local/lib/love2d-builder"
 SOURCE_SCRIPT="love2d-builder-cli.sh"
 
-LIGHT_RED="\033[1;31m"
-LIGHT_GREEN="\033[1;32m"
-LIGHT_YELLOW="\033[1;33m"
-LIGHT_BLUE="\033[1;34m"
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[0;33m"
-BLUE="\033[0;34m"
-WHITE="\033[1;37m"
-NC="\033[0m"
 
-print_banner() {
-    echo ""
-    echo -e "${LIGHT_BLUE}╔══════════════════════════════════════════════════╗"
-    echo -e "${LIGHT_BLUE}║      ${WHITE}Love2D Builder CLI - Global Installer       ${LIGHT_BLUE}║"
-    echo -e "${LIGHT_BLUE}╚══════════════════════════════════════════════════╝"
-    echo ""
-}
-print_success() {
-    echo -e "${LIGHT_GREEN}SUCCESS: ${GREEN}$1${NC}"
-}
-
-print_error() {
-    echo -e "${LIGHT_RED}ERROR: ${RED}$1${NC}"
-}
-
-print_warning() {
-    echo -e "${LIGHT_YELLOW}WARNING: ${YELLOW}$1${NC}"
-}
-
-print_info() {
-    echo -e "${LIGHT_BLUE}INFO: ${BLUE}$1${NC}"
-}
 
 main(){
-    print_banner
+    print_banner_installer
 
    if [ ! -f "$SOURCE_SCRIPT" ]; then
         print_error "$SOURCE_SCRIPT not found in current directory"
