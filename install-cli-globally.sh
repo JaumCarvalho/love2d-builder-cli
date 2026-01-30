@@ -58,5 +58,11 @@ main(){
     print_info "Creating library directory $LIB_DIR..."
     rm -rf "$LIB_DIR"
     mkdir -p "$LIB_DIR"
+
+    print_info "Copying CLI files..."
+    cp "$SOURCE_SCRIPT" "$LIB_DIR/"
+    cp -r src "$LIB_DIR/"
+    cp -r scripts "$LIB_DIR/"
+    chmod +x "$LIB_DIR/$SOURCE_SCRIPT" "$LIB_DIR"/src/*.sh "$LIB_DIR"/scripts/*.sh
 }
 main "$@"
