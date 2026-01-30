@@ -20,16 +20,33 @@ do_build_linux(){
     echo "do build linux function"
 }
 
+test_game(){
+    echo "test game function"
+}
+show_info(){
+    echo "show info function"
+}
+
 print_menu_cli(){
     while true; do
         print_banner_cli
         [ -n "$GAME_NAME" ] && echo -e "Project: ${GAME_NAME} v${GAME_VERSION}${NC}"
         echo -e "${MAGENTA}Build:${NC}"
         echo "1) Linux"
+        echo ""
+        echo -e "${MAGENTA}Tools:${NC}"
+        echo "2) Test Game"
+        echo ""
+        echo -e "${MAGENTA}Config:${NC}"
+        echo "3) Show Info"
+        echo ""
         echo "0) Exit"
+        echo ""
         read -r -p "Option: " choice
         case $choice in
             1) do_build_linux; pause_menu ;;
+            2) test_game; pause_menu ;;
+            3) show_info; pause_menu ;;
             0|q|Q) echo ""; echo -e "${GREEN}Goodbye!"; exit 0 ;;
             *) print_error "Invalid option"; sleep 1 ;;
         esac
