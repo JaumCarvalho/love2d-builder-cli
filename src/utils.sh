@@ -39,6 +39,14 @@ print_banner_cli() {
     echo -e "${BLUE}Version: ${SCRIPT_VERSION}${NC}"
     echo ""
 }
+print_header() {
+    local title="$1"
+    echo ""
+    echo -e "${CYAN}═══════════════════════════════════════════${NC}"
+    echo -e "${BOLD}${title}${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════${NC}"
+    echo ""
+}
 
 print_success() {
     echo -e "${LIGHT_GREEN}SUCCESS: ${GREEN}$1${NC}"
@@ -58,6 +66,7 @@ print_info() {
 export -f pause_menu
 export -f print_banner_installer
 export -f print_banner_cli
+export -f print_header
 
 export -f print_success
 export -f print_error
