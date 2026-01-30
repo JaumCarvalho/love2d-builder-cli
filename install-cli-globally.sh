@@ -36,8 +36,18 @@ print_warning() {
 print_info() {
     echo -e "${LIGHT_BLUE}INFO: $1${NC}"
 }
-print_banner
-print_success
-print_error
-print_warning
-print_info
+
+main(){
+    print_banner
+
+   if [ ! -f "$SOURCE_SCRIPT" ]; then
+        print_error "$SOURCE_SCRIPT not found in current directory"
+        echo ""
+        echo "Please run this script from the love2d-builder-cli directory:"
+        echo ""
+        echo "  ./install-cli-globally.sh"
+        echo ""
+        exit 1
+    fi
+}
+main "$@"
