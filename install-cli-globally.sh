@@ -49,5 +49,10 @@ main(){
         echo ""
         exit 1
     fi
+
+    if [ ! -d "$INSTALL_DIR" ]; then
+        print_info "Creating $INSTALL_DIR"
+        mkdir -p "$INSTALL_DIR"
+    fi
 }
 main "$@"
