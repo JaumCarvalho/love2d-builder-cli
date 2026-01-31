@@ -36,4 +36,10 @@ build_linux(){
         print_error "zip command not found. Install it with: sudo apt install zip"
         return 1
     fi
+
+    love_file="${GAME_NAME}.love"
+
+    print_info "Creating build directory: $OUTPUT_DIR"
+    mkdir -p "$OUTPUT_DIR"
+    print_info "Creating $love_file..."
 }
