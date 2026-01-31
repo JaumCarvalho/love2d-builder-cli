@@ -55,7 +55,22 @@ collect_info() {
 
     export GAME_NAME GAME_VERSION PACKAGE_NAME LOVE_VERSION AUTHOR_NAME BUILD_DIR
 
+    echo ""
+    print_success "Configuration saved!"
+}
 
+show_info(){
+    print_header "PROJECT INFO"
+    echo -e "$Name: $GAME_NAME"
+    echo -e "$Version: $GAME_VERSION"
+    echo -e "$Package: $PACKAGE_NAME"
+    echo -e "$LÖVE: $LOVE_VERSION"
+    echo -e "$Author: $AUTHOR_NAME"
+    echo ""
+    echo -e "Directory: $(pwd)"
+    echo ""
+    [ -f "conf.lua" ] && echo -e "  conf.lua: ${GREEN}OK${NC}" || echo -e "  conf.lua: ${RED}This file doesnt exists${NC}"
+    [ -f "main.lua" ] && echo -e "  main.lua: ${GREEN}OK${NC}" || echo -e "  main.lua: ${RED}This file doesnt exists${NC}"
 }
 
 print_menu_cli(){
@@ -70,6 +85,7 @@ print_menu_cli(){
         echo ""
         echo -e "${MAGENTA}Config:${NC}"
         echo "3) Show Info"
+        echo "4)Info"
         echo ""
         echo "0) Exit"
         echo ""
@@ -78,6 +94,7 @@ print_menu_cli(){
             1) do_build_linux; pause_menu ;;
             2) test_game; pause_menu ;;
             3) collect_info; pause_menu ;;
+            4) [ -z "$GAME_NAME" ] && collect_info; show_info; pause_menu ;;
             0|q|Q) echo ""; echo -e "${GREEN}Goodbye!"; exit 0 ;;
             *) print_error "Invalid option"; sleep 1 ;;
         esac
