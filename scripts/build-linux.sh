@@ -24,4 +24,12 @@ build_linux(){
         fi
     fi
 
+    if [ ! -f "main.lua" ]; then
+        print_warning "main.lua not found in $PROJECT_DIR"
+    fi
+
+    if [ ! -f "conf.lua" ]; then
+        print_warning "conf.lua not found in $PROJECT_DIR"
+    fi
+
 }
