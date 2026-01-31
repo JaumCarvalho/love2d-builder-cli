@@ -175,7 +175,10 @@ EOF
     pause_menu
 }
 
-
+check_command(){
+    cmd="$1"
+    command -v "$cmd" &> /dev/null
+}
 
 export -f pause_menu
 export -f print_banner_installer
