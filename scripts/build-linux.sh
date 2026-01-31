@@ -42,4 +42,13 @@ build_linux(){
     print_info "Creating build directory: $OUTPUT_DIR"
     mkdir -p "$OUTPUT_DIR"
     print_info "Creating $love_file..."
+
+    zip -9 -r "$OUTPUT_DIR/$love_file" . \
+        -x "${BUILD_DIR}/*" \
+        -x "builds/*" \
+        -x "*.sh" \
+        -x "*.md" \
+        -x "*.txt" \
+        -x "src/*" \
+        -x "scripts/*" \
 }
