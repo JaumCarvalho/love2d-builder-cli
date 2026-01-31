@@ -32,4 +32,8 @@ build_linux(){
         print_warning "conf.lua not found in $PROJECT_DIR"
     fi
 
+    if ! command -v zip &> /dev/null; then
+        print_error "zip command not found. Install it with: sudo apt install zip"
+        return 1
+    fi
 }
