@@ -76,3 +76,6 @@ screenshots/
 /tmp/
 *.tmp
 *.bak
+
+# Lua files
+*.lua
