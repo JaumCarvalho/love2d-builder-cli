@@ -98,53 +98,58 @@ build_linux(){
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 show_menu() {
-    echo "=================================="
-    echo "      LÖVE Game Launcher"
-    echo "=================================="
-    echo ""
-    
-    BUILDS=()
-    while IFS= read -r -d '' file; do
-        BUILDS+=("$(basename "$file")")
-    done < <(find "$SCRIPT_DIR" -maxdepth 1 -name "*.love" -type f -print0 2>/dev/null | sort -z)
-    
-    if [ ${#BUILDS[@]} -eq 0 ]; then
-        echo "No builds found in $SCRIPT_DIR"
-        exit 1
-    fi
-    
-    echo "Available builds:"
-    echo ""
-    for i in "${!BUILDS[@]}"; do
-        build_name="${BUILDS[$i]}"
-        timestamp=$(echo "$build_name" | grep -oP '\d{8}_\d{6}' | head -1)
-        if [ -n "$timestamp" ]; then
-            formatted_date=$(echo "$timestamp" | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)_\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3 \4:\5:\6/')
-            echo "  [$((i+1))] $build_name ($formatted_date)"
+    while true; do
+        echo "=================================="
+        echo "      LÖVE Game Launcher"
+        echo "=================================="
+        echo ""
+        
+        BUILDS=()
+        while IFS= read -r -d '' file; do
+            BUILDS+=("$(basename "$file")")
+        done < <(find "$SCRIPT_DIR" -maxdepth 1 -name "*.love" -type f -print0 2>/dev/null | sort -z)
+        
+        if [ ${#BUILDS[@]} -eq 0 ]; then
+            echo "No builds found in $SCRIPT_DIR"
+            exit 1
+        fi
+        
+        echo "Available builds:"
+        echo ""
+        for i in "${!BUILDS[@]}"; do
+            build_name="${BUILDS[$i]}"
+            timestamp=$(echo "$build_name" | grep -oP '\d{8}_\d{6}' | head -1)
+            if [ -n "$timestamp" ]; then
+                formatted_date=$(echo "$timestamp" | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)_\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3 \4:\5:\6/')
+                echo "  [$((i+1))] $build_name ($formatted_date)"
+            else
+                echo "  [$((i+1))] $build_name"
+            fi
+        done
+        
+        echo ""
+        echo "  [0] Exit"
+        echo ""
+        read -rp "Select a build to run [1-${#BUILDS[@]}]: " choice
+        
+        if [ "$choice" = "0" ]; then
+            echo "Goodbye!"
+            exit 0
+        fi
+        
+        if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#BUILDS[@]} ]; then
+            selected="${BUILDS[$((choice-1))]}"
+            echo ""
+            echo "Launching: $selected"
+            love "$SCRIPT_DIR/$selected" "$@"
+            break
         else
-            echo "  [$((i+1))] $build_name"
+            echo ""
+            echo " Invalid selection. Please try again."
+            echo ""
+            sleep 1
         fi
     done
-    
-    echo ""
-    echo "  [0] Exit"
-    echo ""
-    read -rp "Select a build to run [1-${#BUILDS[@]}]: " choice
-    
-    if [ "$choice" = "0" ]; then
-        echo "Goodbye!"
-        exit 0
-    fi
-    
-    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#BUILDS[@]} ]; then
-        selected="${BUILDS[$((choice-1))]}"
-        echo ""
-        echo "Launching: $selected"
-        love "$SCRIPT_DIR/$selected" "$@"
-    else
-        echo "Invalid selection."
-        exit 1
-    fi
 }
 
 # If a specific .love file is passed as argument, run it directly
@@ -175,7 +180,6 @@ LAUNCHER
     echo "Output: $ABS_OUTPUT_DIR/$love_file"
     echo ""
     
-    # Contar builds
     build_count=$(find "$ABS_OUTPUT_DIR" -maxdepth 1 -name "*.love" -type f 2>/dev/null | wc -l)
     print_info "Total builds: $build_count"
     echo ""
