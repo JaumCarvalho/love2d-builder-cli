@@ -38,6 +38,11 @@ collect_info() {
         read -r -p "Game name [my-game]: " input
         GAME_NAME="${input:-my-game}"
     fi
+
+    default_ver="${detected_version:-$GAME_VERSION}"
+    read -r -p "Version [$default_ver]: " input
+    GAME_VERSION="${input:-$default_ver}"
+
 }
 
 print_menu_cli(){
