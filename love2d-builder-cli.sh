@@ -59,18 +59,19 @@ collect_info() {
     print_success "Configuration saved!"
 }
 
-show_info(){
+show_info() {
     print_header "PROJECT INFO"
-    echo -e "$Name: $GAME_NAME"
-    echo -e "$Version: $GAME_VERSION"
-    echo -e "$Package: $PACKAGE_NAME"
-    echo -e "$LÖVE: $LOVE_VERSION"
-    echo -e "$Author: $AUTHOR_NAME"
+    
+    echo -e "${BOLD}Name:${NC}     $GAME_NAME"
+    echo -e "${BOLD}Version:${NC}  $GAME_VERSION"
+    echo -e "${BOLD}Package:${NC}  $PACKAGE_NAME"
+    echo -e "${BOLD}LÖVE:${NC}     $LOVE_VERSION"
+    echo -e "${BOLD}Author:${NC}   $AUTHOR_NAME"
     echo ""
-    echo -e "Directory: $(pwd)"
+    echo -e "${BOLD}Directory:${NC} $(pwd)"
     echo ""
-    [ -f "conf.lua" ] && echo -e "  conf.lua: ${GREEN}OK${NC}" || echo -e "  conf.lua: ${RED}This file doesnt exists${NC}"
-    [ -f "main.lua" ] && echo -e "  main.lua: ${GREEN}OK${NC}" || echo -e "  main.lua: ${RED}This file doesnt exists${NC}"
+    [ -f "conf.lua" ] && echo -e "  conf.lua: ${GREEN}✅${NC}" || echo -e "  conf.lua: ${RED}❌${NC}"
+    [ -f "main.lua" ] && echo -e "  main.lua: ${GREEN}✅${NC}" || echo -e "  main.lua: ${RED}❌${NC}"
 }
 
 print_menu_cli(){
@@ -84,8 +85,8 @@ print_menu_cli(){
         echo "2) Test Game"
         echo ""
         echo -e "${MAGENTA}Config:${NC}"
-        echo "3) Show Info"
-        echo "4)Info"
+        echo "3) Configure"
+        echo "4) Show Info"
         echo ""
         echo "0) Exit"
         echo ""
@@ -104,7 +105,12 @@ print_menu_cli(){
 
 
 main() {
-    print_menu_cli
+    case "${1:-}" in
+        --help|-h) show_help; exit 0 ;;
+        --version|-v) show_version; exit 0 ;;
+        "") check_love_project || exit 1; print_menu_cli ;;
+        *) print_error "Unknown: $1"; echo "Try --help"; exit 1 ;;
+    esac
 }
 
 main "$@"

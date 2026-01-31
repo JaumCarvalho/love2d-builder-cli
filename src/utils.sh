@@ -12,6 +12,7 @@ export WHITE="\033[1;37m"
 export MAGENTA='\033[0;35m'
 export CYAN='\033[0;36m'
 export NC="\033[0m"
+export BOLD='\033[1m'
 
 pause_menu() {
     echo ""
@@ -80,7 +81,99 @@ detect_project_config(){
 }
 
 
+check_love_project() {
+    if [ ! -f "main.lua" ] && [ ! -f "conf.lua" ]; then
+        print_warning "This doesn't look like a Love2D project"
+        print_info "No main.lua or conf.lua found in current directory"
+        echo ""
+        echo "Options:"
+        echo "  1) Create initial setup (main.lua + conf.lua)"
+        echo "  2) Exit"
+        echo ""
+        read -r -p "Choose [1/2]: " response
+        case "$response" in
+            1)
+                create_initial_setup
+                return 0
+                ;;
+            *)
+                return 1
+                ;;
+        esac
+    fi
+    return 0
+}
 
+create_initial_setup() {
+    print_header "CREATING INITIAL SETUP"
+    
+    local game_name
+    local folder_name
+    folder_name=$(basename "$(pwd)")
+    
+    read -r -p "Game name [$folder_name]: " game_name
+    game_name="${game_name:-$folder_name}"
+    
+    print_info "Creating conf.lua..."
+    cat > conf.lua << EOF
+function love.conf(t)
+    t.identity = "${game_name}"
+    t.version = "11.3"
+    t.console = false
+    
+    t.window.title = "${game_name}"
+    t.window.width = 800
+    t.window.height = 600
+    t.window.resizable = true
+    t.window.vsync = 1
+    
+    t.modules.joystick = true
+    t.modules.physics = true
+end
+EOF
+    print_success "Created conf.lua"
+    
+    print_info "Creating main.lua..."
+    cat > main.lua << 'EOF'
+_G.love = require("love")
+local title = "My Love2D Game"
+local message = "Press ESC to exit"
+
+function love.load()
+    love.graphics.setBackgroundColor(0.1, 0.1, 0.2)
+end
+
+function love.update(dt)
+end
+
+function love.draw()
+    local w, h = love.graphics.getDimensions()
+    
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf(title, 0, h/2 - 50, w, "center")
+    
+    love.graphics.setColor(0.7, 0.7, 0.7)
+    love.graphics.printf(message, 0, h/2 + 20, w, "center")
+    
+    love.graphics.setColor(0.5, 0.5, 0.5)
+    love.graphics.print("FPS: " .. love.timer.getFPS(), 10, 10)
+end
+
+function love.keypressed(key)
+    if key == "escape" then
+        love.event.quit()
+    end
+end
+EOF
+    print_success "Created main.lua"
+    
+    echo ""
+    print_success "Initial setup complete!"
+    print_info "Run 'love .' to test your game"
+    echo ""
+    
+    pause_menu
+}
 
 
 
@@ -95,3 +188,5 @@ export -f print_warning
 export -f print_info
 
 export -f detect_project_config
+
+export -f check_love_project
