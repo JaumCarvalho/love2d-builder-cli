@@ -20,8 +20,16 @@ do_build_linux(){
     echo "do build linux function"
 }
 
-test_game(){
-    echo "test game function"
+test_game() {
+    print_header "TESTING GAME"
+    
+    if ! check_command "love"; then
+        print_error "LÖVE not found. Install from https://love2d.org"
+        return 1
+    fi
+    
+    print_info "Starting LÖVE..."
+    love .
 }
 
 collect_info() {
