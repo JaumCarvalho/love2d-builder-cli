@@ -43,6 +43,10 @@ collect_info() {
     read -r -p "Version [$default_ver]: " input
     GAME_VERSION="${input:-$default_ver}"
 
+    default_pkg="com.${AUTHOR_NAME,,}.${GAME_NAME//[^a-zA-Z0-9]/_}"
+    read -r -p "Package [$default_pkg]: " input
+    PACKAGE_NAME="${input:-$default_pkg}"
+
 }
 
 print_menu_cli(){
