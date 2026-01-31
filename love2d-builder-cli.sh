@@ -103,6 +103,29 @@ print_menu_cli(){
 }
 
 
+show_help() {
+    cat << EOF
+$SCRIPT_NAME v$SCRIPT_VERSION
+
+Usage: $(basename "$0") [OPTIONS]
+
+Options:
+  --help, -h       Show this help
+  --version, -v    Show version
+
+Without options, runs interactive menu.
+
+Examples:
+  $(basename "$0")              # Interactive menu
+  $(basename "$0") --help       # Show help
+
+Docs: https://github.com/jaumcarvalho/love2d-builder-cli
+EOF
+}
+
+show_version() {
+    echo "$SCRIPT_NAME v$SCRIPT_VERSION"
+}
 
 main() {
     case "${1:-}" in
