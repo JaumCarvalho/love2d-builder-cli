@@ -37,18 +37,134 @@ build_linux(){
         return 1
     fi
 
-    love_file="${GAME_NAME}.love"
+    mkdir -p "$PROJECT_DIR/$OUTPUT_DIR"
+    ABS_OUTPUT_DIR="$(cd "$PROJECT_DIR/$OUTPUT_DIR" && pwd)"
+    
+    print_info "Creating build directory: $ABS_OUTPUT_DIR"
+    print_info "Current directory: $(pwd)"
 
-    print_info "Creating build directory: $OUTPUT_DIR"
-    mkdir -p "$OUTPUT_DIR"
+    BUILD_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+    BUILD_UUID=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || echo "$(date +%s)$$")
+    BUILD_ID="${BUILD_TIMESTAMP}_${BUILD_UUID:0:8}"
+    
+    love_file="${GAME_NAME}_${BUILD_ID}.love"
+    FULL_LOVE_PATH="$ABS_OUTPUT_DIR/$love_file"
+    
     print_info "Creating $love_file..."
+    print_info "Full path: $FULL_LOVE_PATH"
 
-    zip -9 -r "$OUTPUT_DIR/$love_file" . \
+    zip -9 -q -r "$FULL_LOVE_PATH" . \
+        -x "*.git*" \
         -x "${BUILD_DIR}/*" \
         -x "builds/*" \
-        -x "*.sh" \
         -x "*.md" \
+        -x "*.sh" \
         -x "*.txt" \
+        -x ".gitignore" \
         -x "src/*" \
-        -x "scripts/*" \
+        -x "scripts/*"
+
+    if [ ! -f "$FULL_LOVE_PATH" ]; then
+        print_error "Failed to create $love_file"
+        print_error "Expected path: $FULL_LOVE_PATH"
+        return 1
+    fi
+
+    file_size=$(stat -c %s "$FULL_LOVE_PATH" 2>/dev/null || echo "unknown")
+    file_size_human=$(du -h "$FULL_LOVE_PATH" 2>/dev/null | cut -f1)
+    print_success "Build file created successfully!"
+    print_info "Location: $FULL_LOVE_PATH"
+    print_info "Size: $file_size_human ($file_size bytes)"
+
+    print_info "Creating launcher script..."
+    cat > "$ABS_OUTPUT_DIR/run.sh" << 'LAUNCHER'
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+show_menu() {
+    echo "=================================="
+    echo "      LÖVE Game Launcher"
+    echo "=================================="
+    echo ""
+    
+    BUILDS=()
+    while IFS= read -r -d '' file; do
+        BUILDS+=("$(basename "$file")")
+    done < <(find "$SCRIPT_DIR" -maxdepth 1 -name "*.love" -type f -print0 2>/dev/null | sort -z)
+    
+    if [ ${#BUILDS[@]} -eq 0 ]; then
+        echo "No builds found in $SCRIPT_DIR"
+        exit 1
+    fi
+    
+    echo "Available builds:"
+    echo ""
+    for i in "${!BUILDS[@]}"; do
+        build_name="${BUILDS[$i]}"
+        timestamp=$(echo "$build_name" | grep -oP '\d{8}_\d{6}' | head -1)
+        if [ -n "$timestamp" ]; then
+            formatted_date=$(echo "$timestamp" | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)_\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3 \4:\5:\6/')
+            echo "  [$((i+1))] $build_name ($formatted_date)"
+        else
+            echo "  [$((i+1))] $build_name"
+        fi
+    done
+    
+    echo ""
+    echo "  [0] Exit"
+    echo ""
+    read -rp "Select a build to run [1-${#BUILDS[@]}]: " choice
+    
+    if [ "$choice" = "0" ]; then
+        echo "Goodbye!"
+        exit 0
+    fi
+    
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#BUILDS[@]} ]; then
+        selected="${BUILDS[$((choice-1))]}"
+        echo ""
+        echo "Launching: $selected"
+        love "$SCRIPT_DIR/$selected" "$@"
+    else
+        echo "Invalid selection."
+        exit 1
+    fi
 }
+
+# If a specific .love file is passed as argument, run it directly
+if [ -n "$1" ] && [ -f "$SCRIPT_DIR/$1" ]; then
+    love "$SCRIPT_DIR/$1" "${@:2}"
+else
+    show_menu "$@"
+fi
+LAUNCHER
+    
+    chmod +x "$ABS_OUTPUT_DIR/run.sh"
+
+    echo ""
+    print_success "Linux build complete!"
+    echo ""
+    echo "Build ID: $BUILD_ID"
+    echo "Output directory: $ABS_OUTPUT_DIR"
+    echo ""
+    print_info "Refreshing filesystem cache..."
+    
+    sync
+    find "$ABS_OUTPUT_DIR" -maxdepth 1 -type f > /dev/null 2>&1
+    
+    echo ""
+    print_success "Linux build complete!"
+    echo ""
+    echo "Build ID: $BUILD_ID"
+    echo "Output: $ABS_OUTPUT_DIR/$love_file"
+    echo ""
+    
+    # Contar builds
+    build_count=$(find "$ABS_OUTPUT_DIR" -maxdepth 1 -name "*.love" -type f 2>/dev/null | wc -l)
+    print_info "Total builds: $build_count"
+    echo ""
+    print_info "Use 'Run Build' option to launch builds"
+}
+
+build_linux "$@"
