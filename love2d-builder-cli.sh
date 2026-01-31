@@ -47,6 +47,15 @@ collect_info() {
     read -r -p "Package [$default_pkg]: " input
     PACKAGE_NAME="${input:-$default_pkg}"
 
+    read -r -p "LÖVE version [$LOVE_VERSION]: " input
+    LOVE_VERSION="${input:-$LOVE_VERSION}"
+
+    read -r -p "Author [$AUTHOR_NAME]: " input
+    AUTHOR_NAME="${input:-$AUTHOR_NAME}"
+
+    export GAME_NAME GAME_VERSION PACKAGE_NAME LOVE_VERSION AUTHOR_NAME BUILD_DIR
+
+
 }
 
 print_menu_cli(){
