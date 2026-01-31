@@ -1,0 +1,81 @@
+# Build outputs
+builds/
+*.love
+*.exe
+*.apk
+*.app
+
+# Test files
+test-project/
+test-project-ci/
+ci-test.love
+
+# Love2D downloads
+love-*/
+*.zip
+
+# Temporary files
+*.tmp
+*.log
+/tmp/
+.temp/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Archives
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache
+.cache/
+*.cache
+
+# Love2D specific
+saves/
+screenshots/
+
+# CI/CD
+.github/workflows/*.log
+*.swo
+*~
+
+# Temporários
+/tmp/
+*.tmp
+*.bak
+
+# Lua files
+*.lua
