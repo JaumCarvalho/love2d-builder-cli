@@ -193,3 +193,4 @@ export -f print_info
 export -f detect_project_config
 
 export -f check_love_project
+export -f check_command
