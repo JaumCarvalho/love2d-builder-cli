@@ -17,7 +17,9 @@ AUTHOR_NAME="${USER:-developer}"
 BUILD_DIR="builds"
 
 do_build_linux(){
-    echo "do build linux function"
+    [ -z "$GAME_NAME" ] && collect_info
+    export GAME_NAME LOVE_VERSION BUILD_DIR
+    "$SCRIPTS_DIR/build-linux.sh" "$(pwd)"
 }
 
 test_game() {
