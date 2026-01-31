@@ -171,6 +171,14 @@ LAUNCHER
     print_info "Refreshing filesystem cache..."
     
     sync
+    
+    touch "$ABS_OUTPUT_DIR"
+    touch "$PROJECT_DIR/$BUILD_DIR"
+    
+    touch "$ABS_OUTPUT_DIR/.refresh_${BUILD_ID}"
+    sleep 0.1
+    rm -f "$ABS_OUTPUT_DIR/.refresh_${BUILD_ID}"
+    
     find "$ABS_OUTPUT_DIR" -maxdepth 1 -type f > /dev/null 2>&1
     
     echo ""
@@ -183,6 +191,7 @@ LAUNCHER
     build_count=$(find "$ABS_OUTPUT_DIR" -maxdepth 1 -name "*.love" -type f 2>/dev/null | wc -l)
     print_info "Total builds: $build_count"
     echo ""
+    print_warning "If build files don't appear in explorer files, refresh the folder view"
     print_info "Use 'Run Build' option to launch builds"
 }
 
