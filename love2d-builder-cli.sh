@@ -22,12 +22,39 @@ do_build_linux(){
     "$SCRIPTS_DIR/build-linux.sh" "$(pwd)"
 }
 
+run_build() {
+    print_header "RUN BUILD"
+    
+    BUILD_DIR="${BUILD_DIR:-builds}"
+    OUTPUT_DIR="$BUILD_DIR/linux"
+    
+    if [ ! -d "$OUTPUT_DIR" ]; then
+        print_error "No builds directory found at $OUTPUT_DIR"
+        print_info "Create a build first using 'Build Linux' option"
+        return 0
+    fi
+    
+    if [ ! -f "$OUTPUT_DIR/run.sh" ]; then
+        print_error "Launcher script not found at $OUTPUT_DIR/run.sh"
+        print_info "Create a build first using 'Build Linux' option"
+        return 0
+    fi
+    
+    if ! ls "$OUTPUT_DIR"/*.love 1> /dev/null 2>&1; then
+        print_error "No builds found in $OUTPUT_DIR"
+        print_info "Create a build first using 'Build Linux' option"
+        return 0
+    fi
+    
+    bash "$OUTPUT_DIR/run.sh"
+}
+
 test_game() {
     print_header "TESTING GAME"
     
     if ! check_command "love"; then
         print_error "LÖVE not found. Install from https://love2d.org"
-        return 1
+        return 0
     fi
     
     print_info "Starting LÖVE..."
@@ -89,23 +116,25 @@ print_menu_cli(){
         print_banner_cli
         [ -n "$GAME_NAME" ] && echo -e "Project: ${GAME_NAME} v${GAME_VERSION}${NC}"
         echo -e "${MAGENTA}Build:${NC}"
-        echo "1) Linux"
+        echo "1) Build Linux"
+        echo "2) Run Build"
         echo ""
         echo -e "${MAGENTA}Tools:${NC}"
-        echo "2) Test Game"
+        echo "3) Test Game"
         echo ""
         echo -e "${MAGENTA}Config:${NC}"
-        echo "3) Configure"
-        echo "4) Show Info"
+        echo "4) Configure"
+        echo "5) Show Info"
         echo ""
         echo "0) Exit"
         echo ""
         read -r -p "Option: " choice
         case $choice in
             1) do_build_linux; pause_menu ;;
-            2) test_game; pause_menu ;;
-            3) collect_info; pause_menu ;;
-            4) [ -z "$GAME_NAME" ] && collect_info; show_info; pause_menu ;;
+            2) run_build; pause_menu ;;
+            3) test_game; pause_menu ;;
+            4) collect_info; pause_menu ;;
+            5) [ -z "$GAME_NAME" ] && collect_info; show_info; pause_menu ;;
             0|q|Q) echo ""; echo -e "${GREEN}Goodbye!"; exit 0 ;;
             *) print_error "Invalid option"; sleep 1 ;;
         esac
